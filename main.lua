@@ -8,11 +8,14 @@ function love.load()
     windowHeight = love.graphics.getHeight()
     love.keyboard.setKeyRepeat(true)
     love.graphics.setDefaultFilter("nearest", "nearest", 0)
-    defaultFont = love.graphics.newFont("assets/defaultFont.ttf", 32)
+    defaultFont = love.graphics.newFont("assets/defaultFont.ttf", 64)
     image = love.graphics.newImage("assets/blocks.png")
     explosionsound = love.audio.newSource("assets/explosion.wav", "static")
     placesound = love.audio.newSource("assets/place.wav", "static")
     quad = love.graphics.newQuad(48, 80, 16, 16, image:getWidth(), image:getHeight())
+
+    textpoints = love.graphics.newText(defaultFont, "Points: 0")
+    textlines = love.graphics.newText(defaultFont, "Lines: 0")
 
     tilesize = 64
 
@@ -21,6 +24,8 @@ function love.load()
     mapwidth = 10
     mapheight = 23
     map = {}
+    pointsforline = 100
+
     reset()
 
     forms = {}
@@ -163,6 +168,8 @@ function love.load()
     math.randomseed(os.time())
 
     player = {
+        points = 0,
+        lines = 0,
         x = start.x,
         y = start.y,
         form = nil
@@ -346,12 +353,17 @@ function setform(xoffset, yoffset)
     checkforlines()
 end
 
+function addpints(points)
+    player.points = player.points + points
+    textpoints:set("Points: " .. player.points)
+end
+
 function collapsemap(aboveline)
     for y = aboveline, 2, -1 do
         map[y] = map[y - 1]
     end
 
-    -- TODO: add 'addpoints' method
+    addpints(pointsforline)
 end
 
 function removeline(line)
@@ -359,6 +371,9 @@ function removeline(line)
         map[line][x] = 0
     end
 
+    player.lines = player.lines + 1
+
+    textlines:set("Lines: " .. player.lines)
     collapsemap(line)
 end
 
@@ -373,6 +388,7 @@ function checkforlines()
         end
         if activetilesinline == mapwidth then
             removeline(y)
+            y = y - 1
             linesremoved = true
         end
     end
@@ -415,6 +431,8 @@ function love.draw(dt)
     love.graphics.setColor(255, 255, 255, 255)
     renderform(player.form, player.x, player.y)
     renderform(player.next, 11, 0)
+    love.graphics.draw(textpoints, (mapwidth + 1) * tilesize + 32, tilesize * 6)
+    love.graphics.draw(textlines, (mapwidth + 1) * tilesize + 32, tilesize * 7)
 
     -- for y = 1, #map do
     --     for x = 1, #map[y] do
