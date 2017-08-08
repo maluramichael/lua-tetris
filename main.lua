@@ -9,13 +9,16 @@ function love.load()
     love.keyboard.setKeyRepeat(true)
     love.graphics.setDefaultFilter("nearest", "nearest", 0)
     defaultFont = love.graphics.newFont("assets/defaultFont.ttf", 64)
+    imagefont = love.graphics.newImageFont("assets/tristarf.png", '!"%`{} -./0123456789:;=?ABCDEFGHIJKLMNOPQRSTUVWXYZ')
+
     image = love.graphics.newImage("assets/blocks.png")
     explosionsound = love.audio.newSource("assets/explosion.wav", "static")
     placesound = love.audio.newSource("assets/place.wav", "static")
+
     quad = love.graphics.newQuad(48, 80, 16, 16, image:getWidth(), image:getHeight())
 
-    textpoints = love.graphics.newText(defaultFont, "Points: 0")
-    textlines = love.graphics.newText(defaultFont, "Lines: 0")
+    textpoints = love.graphics.newText(imagefont, "POINTS: 0")
+    textlines = love.graphics.newText(imagefont, "LINES: 0")
 
     tilesize = 64
 
@@ -357,7 +360,7 @@ end
 
 function addpints(points)
     player.points = player.points + points
-    textpoints:set("Points: " .. player.points)
+    textpoints:set("POINTS: " .. player.points)
 end
 
 function collapsemap(aboveline)
@@ -375,7 +378,7 @@ function removeline(line)
 
     player.lines = player.lines + 1
 
-    textlines:set("Lines: " .. player.lines)
+    textlines:set("LINES: " .. player.lines)
     collapsemap(line)
 end
 
@@ -433,8 +436,8 @@ function love.draw(dt)
     love.graphics.setColor(255, 255, 255, 255)
     renderform(player.form, player.x, player.y)
     renderform(player.next, 11, 0)
-    love.graphics.draw(textpoints, (mapwidth + 1) * tilesize + 32, tilesize * 6)
-    love.graphics.draw(textlines, (mapwidth + 1) * tilesize + 32, tilesize * 7)
+    love.graphics.draw(textpoints, (mapwidth + 1) * tilesize + 32, tilesize * 6, 0, 2, 2)
+    love.graphics.draw(textlines, (mapwidth + 1) * tilesize + 32, tilesize * 7, 0, 2, 2)
 
     -- for y = 1, #map do
     --     for x = 1, #map[y] do
