@@ -19,19 +19,7 @@ function love.load()
     mapwidth = 10
     mapheight = 23
     map = {}
-    for y = 1, mapheight do
-        map[y] = {}
-        for x = 1, mapwidth do
-            map[y][x] = 0
-            -- debug
-            if y == mapheight then
-                map[y][x] = 1
-            end
-            if y == mapheight - 1 then
-                map[y][x] = math.random(0, 1)
-            end
-        end
-    end
+    reset()
 
     forms = {}
     forms["L"] = {
@@ -320,11 +308,25 @@ function resetplayer()
     checkloosecondition()
 end
 
+function reset()
+    for y = 1, mapheight do
+        map[y] = {}
+        for x = 1, mapwidth do
+            map[y][x] = 0
+            -- debug
+            if y == mapheight then
+                map[y][x] = 1
+            end
+            if y == mapheight - 1 then
+                map[y][x] = math.random(0, 1)
+            end
+        end
+    end
+end
+
 function checkloosecondition()
     if formmovable(0, 0) == false then
-        print("LOOSE")
-
-        -- TODO: add reset function
+        reset()
     end
 end
 
