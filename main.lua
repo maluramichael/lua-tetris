@@ -20,7 +20,7 @@ function love.load()
     tilesize = 64
 
     quadscale = tilesize / 16
-    padding = 5
+    padding = 0
     mapwidth = 10
     mapheight = 23
     map = {}
