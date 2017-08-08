@@ -10,6 +10,8 @@ function love.load()
     love.graphics.setDefaultFilter("nearest", "nearest", 0)
     defaultFont = love.graphics.newFont("assets/defaultFont.ttf", 32)
     image = love.graphics.newImage("assets/blocks.png")
+    explosionsound = love.audio.newSource("assets/explosion.wav", "static")
+    placesound = love.audio.newSource("assets/place.wav", "static")
     quad = love.graphics.newQuad(48, 80, 16, 16, image:getWidth(), image:getHeight())
 
     tilesize = 64
@@ -340,6 +342,7 @@ function setform(xoffset, yoffset)
         end
     end
 
+    placesound:play()
     checkforlines()
 end
 
@@ -360,6 +363,7 @@ function removeline(line)
 end
 
 function checkforlines()
+    local linesremoved = false
     for y = 1, #map do
         local activetilesinline = 0
         for x = 1, #map[y] do
@@ -369,7 +373,11 @@ function checkforlines()
         end
         if activetilesinline == mapwidth then
             removeline(y)
+            linesremoved = true
         end
+    end
+    if linesremoved == true then
+        explosionsound:play()
     end
 end
 
