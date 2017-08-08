@@ -314,12 +314,12 @@ function reset()
         for x = 1, mapwidth do
             map[y][x] = 0
             -- debug
-            if y == mapheight then
-                map[y][x] = 1
-            end
-            if y == mapheight - 1 then
-                map[y][x] = math.random(0, 1)
-            end
+            -- if y == mapheight then
+            --     map[y][x] = 1
+            -- end
+            -- if y == mapheight - 1 then
+            --     map[y][x] = math.random(0, 1)
+            -- end
         end
     end
 end
