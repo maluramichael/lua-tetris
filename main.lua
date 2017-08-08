@@ -27,13 +27,139 @@ function love.load()
     end
 
     forms = {}
-    forms["L"] = {{1, 0}, {1, 0}, {1, 1}}
-    forms["J"] = {{0, 1}, {0, 1}, {1, 1}}
-    forms["T"] = {{1, 1, 1}, {0, 1, 0}}
-    forms["O"] = {{1, 1}, {1, 1}}
-    forms["S"] = {{0, 1, 1}, {1, 1, 0}}
-    forms["Z"] = {{1, 1, 0}, {0, 1, 1}}
-    forms["I"] = {{1}, {1}, {1}, {1}}
+    forms["L"] = {
+        {
+            {1, 0, 0},
+            {1, 0, 0},
+            {1, 1, 0}
+        },
+        {
+            {0, 0, 0},
+            {0, 0, 1},
+            {1, 1, 1}
+        },
+        {
+            {0, 1, 1},
+            {0, 0, 1},
+            {0, 0, 1}
+        },
+        {
+            {1, 1, 1},
+            {1, 0, 0},
+            {0, 0, 0}
+        }
+    }
+
+    forms["J"] = {
+        {
+            {0, 0, 1},
+            {0, 0, 1},
+            {0, 1, 1}
+        },
+        {
+            {1, 1, 1},
+            {0, 0, 1},
+            {0, 0, 0}
+        },
+        {
+            {1, 1, 0},
+            {1, 0, 0},
+            {1, 0, 0}
+        },
+        {
+            {0, 0, 0},
+            {1, 0, 0},
+            {1, 1, 1}
+        }
+    }
+
+    forms["T"] = {
+        {
+            {1, 1, 1},
+            {0, 1, 0},
+            {0, 0, 0}
+        },
+        {
+            {1, 0, 0},
+            {1, 1, 0},
+            {1, 0, 0}
+        },
+        {
+            {0, 0, 0},
+            {0, 1, 0},
+            {1, 1, 1}
+        },
+        {
+            {0, 0, 1},
+            {0, 1, 1},
+            {0, 0, 1}
+        }
+    }
+    forms["O"] = {
+        {
+            {1, 1},
+            {1, 1}
+        }
+    }
+
+    forms["S"] = {
+        {
+            {0, 1, 1},
+            {1, 1, 0},
+            {0, 0, 0}
+        },
+        {
+            {1, 0, 0},
+            {1, 1, 0},
+            {0, 1, 0}
+        },
+        {
+            {0, 0, 0},
+            {1, 1, 0},
+            {0, 1, 1}
+        },
+        {
+            {0, 0, 1},
+            {0, 1, 1},
+            {0, 1, 0}
+        }
+    }
+    forms["Z"] = {
+        {
+            {1, 1, 0},
+            {0, 1, 1},
+            {0, 0, 0}
+        },
+        {
+            {0, 1, 0},
+            {1, 1, 0},
+            {1, 0, 0}
+        },
+        {
+            {0, 0, 0},
+            {1, 1, 0},
+            {0, 1, 1}
+        },
+        {
+            {0, 0, 1},
+            {0, 1, 1},
+            {0, 1, 0}
+        }
+    }
+    forms["I"] = {
+        {
+            {0,1,0,0},
+            {0,1,0,0},
+            {0,1,0,0},
+            {0,1,0,0}
+        },
+        {
+            {0,0,0,0},
+            {1,1,1,1},
+            {0,0,0,0},
+            {0,0,0,0}
+        },
+    }
     -- forms["TEST"] = {{1}}
 
     start = {x = 3, y = 0}
@@ -43,16 +169,22 @@ function love.load()
     player = {
         x = start.x,
         y = start.y,
-        form = randomelement(forms),
-        next = randomelement(forms)
+        form = nil
     }
 
-    --setform(0, 6) -- just for debug purpose
     resetplayer()
 
     fallspeed = 1
     tick = fallspeed
+end
 
+function rotate()
+    local nextrotation = player.formrotation + 1
+    if nextrotation > player.formmaxrotations then
+        nextrotation = 1
+    end
+    player.formrotation = nextrotation
+    player.form = player.formtype[nextrotation]
 end
 
 function randomelement(elements)
@@ -61,8 +193,17 @@ function randomelement(elements)
     for k in pairs(elements) do
         table.insert(keyset, k)
     end
+
     -- now you can reliably return a random key
     return elements[keyset[math.random(#keyset)]]
+end
+
+function randomform()
+    local randomtype = randomelement(forms)
+    local maxrotations = #randomtype
+    local randomindex = math.random(maxrotations)
+    local randomform = randomtype[randomindex]
+    return randomform, randomtype, randomindex, maxrotations
 end
 
 function love.keypressed(key, scancode, isrepeat)
@@ -74,6 +215,11 @@ function love.keypressed(key, scancode, isrepeat)
     if key == "left" then
         moveform(-1, 0)
     end
+
+    if key == "a" then
+        rotate()
+    end
+
     if key == "right" then
         moveform(1, 0)
     end
@@ -106,7 +252,6 @@ function formmovable(dx, dy)
     formwidth = #player.form[1]
     formheight = #player.form
 
-    print(dx, dy)
     -- form goes down
     if dy == 1 then
         -- +1 because player.x and y starts with 0 and lua tables start with 1
@@ -151,7 +296,22 @@ end
 function resetplayer()
     player.x = start.x
     player.y = start.y
-    player.form = randomelement(forms)
+
+    if player.form == nil then
+        player.form, player.formtype, player.formrotation, player.formmaxrotations = randomform()
+    else
+        player.form,
+            player.formtype,
+            player.formrotation,
+            player.formmaxrotations = player.next, player.nexttype, player.nextrotation, player.nextmaxrotations
+        player.next, player.nexttype, player.nextrotation, player.nextmaxrotations = randomform()
+    end
+
+    if player.next == nil then
+        player.next, player.nexttype, player.nextrotation, player.nextmaxrotations = randomform()
+    else
+        player.next, player.nexttype, player.nextrotation, player.nextmaxrotations = randomform()
+    end
 end
 
 function setform(xoffset, yoffset)
@@ -165,18 +325,19 @@ function setform(xoffset, yoffset)
     end
 end
 
-function renderform(xoffset, yoffset)
-    for y = 1, #player.form do
-        for x = 1, #player.form[y] do
-            -- love.graphics.rectangle(
-            --     "fill",
-            --     (x + xoffset) * tilesize,
-            --     (y + yoffset) * tilesize,
-            --     tilesize - padding,
-            --     tilesize - padding
-            -- )
-            if player.form[y][x] == 1 then
+function renderform(form, xoffset, yoffset)
+    for y = 1, #form do
+        for x = 1, #form[y] do
+            if form[y][x] == 1 then
                 love.graphics.draw(image, quad, (x + xoffset) * tilesize, (y + yoffset) * tilesize, 0, quadscale)
+            -- else
+            --     love.graphics.rectangle(
+            --         "fill",
+            --         (x + xoffset) * tilesize,
+            --         (y + yoffset) * tilesize,
+            --         tilesize - padding,
+            --         tilesize - padding
+            --     )
             end
         end
     end
@@ -196,5 +357,6 @@ function love.draw(dt)
     end
 
     love.graphics.setColor(255, 255, 255, 255)
-    renderform(player.x, player.y)
+    renderform(player.form, player.x, player.y)
+    renderform(player.next, 11, 0)
 end
