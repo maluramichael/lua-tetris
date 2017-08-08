@@ -148,19 +148,18 @@ function love.load()
     }
     forms["I"] = {
         {
-            {0,1,0,0},
-            {0,1,0,0},
-            {0,1,0,0},
-            {0,1,0,0}
+            {0, 1, 0, 0},
+            {0, 1, 0, 0},
+            {0, 1, 0, 0},
+            {0, 1, 0, 0}
         },
         {
-            {0,0,0,0},
-            {1,1,1,1},
-            {0,0,0,0},
-            {0,0,0,0}
-        },
+            {0, 0, 0, 0},
+            {1, 1, 1, 1},
+            {0, 0, 0, 0},
+            {0, 0, 0, 0}
+        }
     }
-    -- forms["TEST"] = {{1}}
 
     start = {x = 3, y = 0}
 
@@ -249,45 +248,43 @@ function moveform(dx, dy)
 end
 
 function formmovable(dx, dy)
-    formwidth = #player.form[1]
-    formheight = #player.form
+    -- +1 because player.x and y starts with 0 and lua tables start with 1
+    playerxinmap = player.x + 1
+    playeryinmap = player.y + 1
 
-    -- form goes down
-    if dy == 1 then
-        -- +1 because player.x and y starts with 0 and lua tables start with 1
-        playerxinmap = player.x + 1
-        playeryinmap = player.y + 1
+    -- iterate through every block of the form
+    for y = 1, #player.form do
+        for x = 1, #player.form[y] do
+            if player.form[y][x] == 1 then
+                checkx = (playerxinmap - 1) + x + dx
+                checky = (playeryinmap - 1) + y + dy
 
-        -- iterate through every block of the form
-        for y = 1, #player.form do
-            for x = 1, #player.form[y] do
-                blockbelowx = playerxinmap + (x - 1)
-                blockbelowy = playeryinmap + (y - 1) + 1
-
-                if blockbelowy > mapheight then
+                if checky > mapheight then
                     setform(player.x, player.y)
                     resetplayer()
                     return false
                 end
 
-                blockbelow = map[blockbelowy][blockbelowx]
+                if checkx <= 0 then
+                    return false
+                end
+
+                if checkx > mapwidth then
+                    return false
+                end
+
+                blocktocheck = map[checky][checkx]
 
                 -- check if anything is beneath the block
-                if player.form[y][x] == 1 and blockbelow == 1 then
-                    setform(player.x, player.y)
-                    resetplayer()
+                if player.form[y][x] == 1 and blocktocheck == 1 then
+                    if dy == 1 then
+                        setform(player.x, player.y)
+                        resetplayer()
+                    end
                     return false
                 end
             end
         end
-    end
-
-    if dx == -1 and (player.x) <= 0 then
-        return false
-    end
-
-    if dx == 1 and (player.x + formwidth) > mapwidth - 1 then
-        return false
     end
 
     return true
@@ -359,4 +356,11 @@ function love.draw(dt)
     love.graphics.setColor(255, 255, 255, 255)
     renderform(player.form, player.x, player.y)
     renderform(player.next, 11, 0)
+
+    -- for y = 1, #map do
+    --     for x = 1, #map[y] do
+    --         love.graphics.setColor(255, 255, 255, 255)
+    --         love.graphics.print(x .. " " .. y, x * tilesize, y * tilesize, 0, 2)
+    --     end
+    -- end
 end
