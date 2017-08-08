@@ -16,7 +16,7 @@ function love.load()
 
     quadscale = tilesize / 16
     padding = 5
-    mapwidth = 6
+    mapwidth = 10
     mapheight = 23
     map = {}
     for y = 1, mapheight do
@@ -27,8 +27,8 @@ function love.load()
             if y == mapheight then
                 map[y][x] = 1
             end
-            if y == mapheight -1 then
-                map[y][x] = math.random(0,1)
+            if y == mapheight - 1 then
+                map[y][x] = math.random(0, 1)
             end
         end
     end
@@ -317,9 +317,16 @@ function resetplayer()
         player.next, player.nexttype, player.nextrotation, player.nextmaxrotations = randomform()
     end
 
-    -- TODO: add loose condition
+    checkloosecondition()
 end
 
+function checkloosecondition()
+    if formmovable(0, 0) == false then
+        print("LOOSE")
+
+        -- TODO: add reset function
+    end
+end
 
 function setform(xoffset, yoffset)
     for y = 1, #player.form do
@@ -358,7 +365,6 @@ function checkforlines()
                 activetilesinline = activetilesinline + 1
             end
         end
-        print(activetilesinline)
         if activetilesinline == mapwidth then
             removeline(y)
         end
