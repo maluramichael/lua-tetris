@@ -239,10 +239,10 @@ function love.keyreleased(key, scancode)
 end
 
 function love.update(dt)
-    -- tick = tick - dt
+    tick = tick - dt
     if tick <= 0 then
         moveform(0, 1)
-        tick = fallspeed
+        tick = fallspeed - (player.lines * 0.1)
     end
 end
 
