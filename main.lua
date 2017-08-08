@@ -26,8 +26,6 @@ function love.load()
     map = {}
     pointsforline = 100
 
-    reset()
-
     forms = {}
     forms["L"] = {
         {
@@ -175,7 +173,8 @@ function love.load()
         form = nil
     }
 
-    resetplayer()
+    reset()
+    resetplayerposition()
 
     fallspeed = 1
     tick = fallspeed
@@ -219,7 +218,7 @@ function love.keypressed(key, scancode, isrepeat)
         moveform(-1, 0)
     end
 
-    if key == "a" then
+    if key == "space" then
         rotate()
     end
 
@@ -265,7 +264,7 @@ function formmovable(dx, dy)
 
                 if checky > mapheight then
                     setform(player.x, player.y)
-                    resetplayer()
+                    resetplayerposition()
                     return false
                 end
 
@@ -283,7 +282,7 @@ function formmovable(dx, dy)
                 if player.form[y][x] == 1 and blocktocheck == 1 then
                     if dy == 1 then
                         setform(player.x, player.y)
-                        resetplayer()
+                        resetplayerposition()
                     end
                     return false
                 end
@@ -294,7 +293,7 @@ function formmovable(dx, dy)
     return true
 end
 
-function resetplayer()
+function resetplayerposition()
     player.x = start.x
     player.y = start.y
 
@@ -318,6 +317,9 @@ function resetplayer()
 end
 
 function reset()
+    player.points = 0
+    player.lines = 0
+
     for y = 1, mapheight do
         map[y] = {}
         for x = 1, mapwidth do
