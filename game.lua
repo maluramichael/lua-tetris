@@ -1,3 +1,5 @@
+-- Gamestate = require "libs.hump.gamestate"
+-- menu = require "menu"
 forms = require 'forms'
 
 local game = {}
@@ -51,6 +53,7 @@ function game:keypressed(key, scancode, isrepeat)
     -- print("key pressed: " .. key)
     if key == "escape" then
         love.event.quit()
+        -- Gamestate.switch(menu)
     end
 
     if key == "left" then
@@ -64,6 +67,7 @@ function game:keypressed(key, scancode, isrepeat)
     if key == "right" then
         moveform(1, 0)
     end
+
     if key == "down" then
         moveform(0, 1)
         tick = fallspeed
